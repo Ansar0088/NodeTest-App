@@ -1,58 +1,41 @@
 const http = require("http");
-const mongoose=require('mongoose')
-main().catch(err => console.log(err));
+const mongoose = require("mongoose");
+const express = require("express");
+const morgan = require("morgan");
+const cors = require('cors')
+require("dotenv").config();
 
 
+// Connect to MongoDB
 async function main() {
-    await mongoose.connect('mongodb://localhost:27017/EcommerceTest');
-    console.log('Databas connected--------------')
-  
+  try {
+    await mongoose.connect("mongodb+srv://AnsarDev:y_mwwgR5NDaeuVY@cluster0.6rk8y.mongodb.net/EcommerceTest?retryWrites=true&w=majority", {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log("Database connected successfully, Ansar!");
+  } catch (err) {
+    console.error("Database connection failed hai Ansar:", err.message);
+    process.exit(1); 
   }
-  console.log(' wrong Databas connected---------------')
+}
+main();
 
-// EXPRESS SERVER
-require('dotenv').config()
-const express = require("express")
+
 const server = express();
-const morgan = require("morgan")
-const productRouter = require("./routes/product")
-const userController=require('./routes/user')
+exports.server = server;
 server.use(express.json());
 server.use(morgan("default"));
-server.use(express.static("public"))
-server.use("/api", productRouter.routes);
-server.use("/users",userController.routes)
-console.log('agyaaa---',process.env.DB_PASSWORD)
+server.use(express.static("public"));
+server.use(cors());
+const productRouter = require("./routes/product");
+const userController = require("./routes/user");
+
+server.use("/products", productRouter);
+server.use("/users", userController.routes);
+
+
+// Start the Express Server
 server.listen(8080, () => {
-  console.log("Server is running on port 8080")
-})
-
-// const server = http.createServer((req, res) => {
-//   console.log(req.url,req.method);
-//   if (req.url.startsWith("/product")) {
-//     const id = req.url.split("/")[2];
-//     const prd = products.find((p) => p.id === (+id));
-//     console.log('ewe---',prd)
-//     res.setHeader("Conntent-Type", "text-html");
-//     let modifyIndex = index
-//       .replace("**title**", prd.title)
-//       .replace("**url**", prd.thumbnail)
-//       .replace("**description**", prd.description);
-//     res.end(modifyIndex);
-//   } return;
-
-//   switch (req.url) {
-//     case "/":
-//       res.setHeader("content-Type", "Text/html");
-//       res.end(index);
-//       break;
-//     case "/api":
-//       res.setHeader("content-Type", "application-json");
-//       res.end(JSON.stringify(json));
-//       break;
-//     default:
-//       res.writeHead(404);
-//       res.end();
-//   }
-// });
-// server.listen(7070);
+  console.log("Server is running on port 8080");
+});
