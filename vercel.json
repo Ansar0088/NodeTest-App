@@ -19,7 +19,7 @@
         "dest": "build/index.html"
       },
       {
-        "src": "/add",
+        "src": "/add-product",
         "dest": "build/index.html"
       },
       {
