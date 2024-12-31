@@ -1,48 +1,87 @@
-const fs = require("fs");
-const json = JSON.parse(fs.readFileSync("public/data.json", "utf-8"));
-const users = json.users;
+const User = require("../model/user");
+const jwt = require("jsonwebtoken");
 
-exports.createUser = (req, res) => {
-    console.log(req.body)
-    users.push(req.body);
-    res.status(201).json(req.body);
-  };
-  exports.getAllUser = (req, res) => {
+// Create a new user
+exports.createUser = async (req, res) => {
+  try {
+    const user = await User.create(req.body);
+    var token = jwt.sign({ email: req.body.email }, process.env.SECRET);
+    user.token = token;
+    res.status(201).json(user);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+// Get all users
+exports.getAllUser = async (req, res) => {
+  try {
+    const users = await User.find();
     res.json(users);
-  };
-  
-  exports.getUser = (req, res) => {
-    const id = req.params.id ? +req.params.id : null;
-  
-    if (id) {
-      const user = users.find((p) => p.id === id);
-      if (user) {
-        res.json(user);
-      } else {
-        res.status(404).json({ message: "user not found" });
-      }
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Get a specific user
+exports.getUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (user) {
+      res.json(user);
     } else {
-      res.json(users);
+      res.status(404).json({ message: "User not found" });
     }
-  };
-  exports.updateUser = (req, res) => {
-    const id = +req.params.id;
-    const userIndex = users.findIndex((p) => p.id === id);
-    const user = users[userIndex];
-    users.splice(userIndex, 1, { ...user, ...req.body });
-    res.status(201).json();
-  };
-  exports. replaceUser = (req, res) => {
-    const id = +req.params.id;
-    const userIndex = users.findIndex((p) => p.id === id);
-    users.splice(userIndex, 1, { ...req.body, id: id });
-    res.status(201).json();
-  };
-  exports.deleteUser = (req, res) => {
-    const id = +req.params.id;
-    const userIndex = users.findIndex((p) => p.id === id);
-    const user = users[userIndex];
-    user.splice(userIndex, 1);
-    console.log("gyaa---------", user);
-    res.status(201).json(users);
-  };
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Update a user (merge updates)
+exports.updateUser = async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { $set: req.body },
+      { new: true, runValidators: true }
+    );
+    if (user) {
+      res.json(user);
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+// Replace a user
+exports.replaceUser = async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      overwrite: true,
+    });
+    if (user) {
+      res.json(user);
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+// Delete a user
+exports.deleteUser = async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (user) {
+      res.json({ message: "User deleted", user });
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+};

@@ -1,0 +1,144 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        :root {
+            --background: #F0F0F0;
+            --white: #fff;
+            --black: #000;
+            --grey: #666;
+            --accent: #cf092c;
+            --font-bold: 700;
+            --time: 0.3s;
+            --easing: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: -apple-system, ".SFNSText-Regular", 'Helvetica Neue', sans-serif;
+            line-height: 1.5;
+            color: var(--grey);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--background);
+            height: 100%;
+            margin: 0;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            vertical-align: top;
+        }
+
+        hr {
+            border: 0;
+            height: 3px;
+            width: 30px;
+            background-color: var(--accent);
+            margin: 22px 0 20px;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        p {
+            margin: 0 0 1.5em 0;
+        }
+
+        p:last-child {
+            margin-bottom: 0;
+        }
+
+        .btn {
+            display: inline-block;
+            color: var(--white);
+            text-align: center;
+            padding: 1.75em 3.5em;
+            white-space: nowrap;
+            border-radius: 5px;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1.4px;
+            font-weight: var(--font-bold);
+        }
+
+        .product {
+            position: relative;
+            height:fit-content;
+            width: 400px;
+            padding: 30px;
+            border-radius: 8px;
+            background-color: var(--white);
+            transition: box-shadow var(--time) var(--easing);
+            box-shadow: 0 30px 25px -20px rgba(0, 0, 0, 0.15);
+        }
+
+        .product:hover {
+            box-shadow: 0 36px 28px -20px rgba(0, 0, 0, 0.2);
+        }
+
+        .product__image {
+            width:80%;
+            /* margin-left: -40%; */
+            margin-right: -40%;
+            margin-top: -5px;
+            margin-bottom: 30px;
+            max-width: none;
+        }
+
+        .product__title {
+            font-size: 30px;
+            color: var(--black);
+            margin: 0 0 0.5em 0;
+            line-height: 1.1;
+        }
+
+        .product__price {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            top: -30px;
+            left: -30px;
+            width: 100px;
+            height: 50px;
+            background-color: rgba(0, 0, 0, 0.95);
+            color: var(--white);
+            border-radius: 50%;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1.4px;
+            font-weight: var(--font-bold);
+        }
+
+        .product__btn {
+            position: absolute;
+            bottom: -30px;
+            right: 30px;
+            background-color: rgba(207, 9, 44, 0.95);
+            transition: background-color var(--time) var(--easing), box-shadow var(--time) var(--easing);
+            box-shadow: 0 30px 25px -20px rgba(0, 0, 0, 0.15);
+        }
+
+        .product__btn:hover {
+            background-color: rgba(48, 4, 11, 0.95);
+            box-shadow: 0 36px 28px -20px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="product">
+        <span class="product__price"><%= product.price %></span>
+        <img class="product__image" src="**url**" alt="Product Image">
+        <h1 class="product__title"><%= product.title %></h1>
+        <hr />
+        <p><%= product.rating %></p>
+        <a href="#" class="product__btn btn">Buy Now</a>
+    </div>
+</body>
+</html>
