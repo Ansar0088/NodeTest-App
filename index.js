@@ -5,6 +5,7 @@ const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
 require("dotenv").config();
+const fs = require("fs");
 
 // Connect to MongoDB
 async function main() {
@@ -30,6 +31,7 @@ server.use(express.json());
 server.use(morgan("default"));
 server.use(express.static("public"));
 server.use(cors());
+const publicKey = fs.readFileSync("public.key", "utf8");
 
 const auth = (req, res, next) => {
   const authHeader = req.get("Authorization");
@@ -38,13 +40,16 @@ const auth = (req, res, next) => {
     return res.status(401).json({ message: "Authorization token missing or invalid" });
   }
 
-  const token = authHeader.split(' ')[1];
+  let token = authHeader.split(" ")[1];
+
+  token = token.replace(/^"|"$/g, "");
 
   try {
-    const decoded = jwt.verify(token, process.env.SECRET);
+    const decoded = jwt.verify(token,publicKey);
     console.log("Decoded Token:", decoded);
 
     if (decoded.email) {
+      req.user = decoded;
       next();
     } else {
       res.status(401).json({ message: "Unauthorized access" });
@@ -55,14 +60,18 @@ const auth = (req, res, next) => {
   }
 };
 
+
 // api routes
 const productRouter = require("./routes/product");
 const userRouter = require("./routes/user");
-
+const authRouter=require("./routes/auth")
 server.use("/products", auth,productRouter);
 server.use("/users",auth, userRouter);
+server.use("/auth",authRouter)
+
+
 
 // Start the Express Server
-server.listen(8080, () => {
-  console.log("Server is running on port 8080");
+server.listen(8081, () => {
+  console.log("Server is running on port 8081");
 });

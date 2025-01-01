@@ -23,10 +23,18 @@ exports.createProduct = async (req, res) => {
     const savedProduct = await product.save();
     res
       .status(201)
-      .json({ message: "Product created successfully Ansar", product: savedProduct });
+      .json({
+        message: "Product created successfully Ansar",
+        product: savedProduct,
+      });
   } catch (err) {
     console.error("Error creating product:", err.message);
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({
+      error: "Server error",
+      message: err.message,
+      stack: err.stack,
+      details: err,
+    });
   }
 };
 
