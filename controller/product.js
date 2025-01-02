@@ -21,12 +21,10 @@ exports.createProduct = async (req, res) => {
     });
 
     const savedProduct = await product.save();
-    res
-      .status(201)
-      .json({
-        message: "Product created successfully Ansar",
-        product: savedProduct,
-      });
+    res.status(201).json({
+      message: "Product created successfully Ansar",
+      product: savedProduct,
+    });
   } catch (err) {
     console.error("Error creating product:", err.message);
     res.status(500).json({
@@ -40,13 +38,26 @@ exports.createProduct = async (req, res) => {
 
 exports.getAllProducts = async (req, res) => {
   try {
-    const products = await ProductModel.find();
+    let query = ProductModel.find();
+
+    if (req.query.sort) {
+      query = query.sort(req.query.sort);
+    }
+
+    if (req.query.limit) {
+      const limit = parseInt(req.query.limit, 10); 
+      if (!isNaN(limit)) {
+        query = query.limit(limit);
+      }
+    }
+    const products = await query.exec();
     res.json(products);
   } catch (err) {
     console.error("Error fetching products:", err.message);
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error: "Server error", details: err.message });
   }
 };
+
 
 exports.getProduct = async (req, res) => {
   try {

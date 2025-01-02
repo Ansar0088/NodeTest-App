@@ -37,19 +37,18 @@ const auth = (req, res, next) => {
   const authHeader = req.get("Authorization");
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    console.log("Authorization Header Missing or Invalid:", authHeader);
     return res.status(401).json({ message: "Authorization token missing or invalid" });
   }
 
-  let token = authHeader.split(" ")[1];
-
-  token = token.replace(/^"|"$/g, "");
+  const token = authHeader.split(" ")[1];
 
   try {
-    const decoded = jwt.verify(token,publicKey);
+    const decoded = jwt.verify(token, publicKey);
     console.log("Decoded Token:", decoded);
 
     if (decoded.email) {
-      req.user = decoded;
+      req.user = decoded; // Attach user info to request
       next();
     } else {
       res.status(401).json({ message: "Unauthorized access" });
@@ -61,11 +60,12 @@ const auth = (req, res, next) => {
 };
 
 
+
 // api routes
 const productRouter = require("./routes/product");
 const userRouter = require("./routes/user");
 const authRouter=require("./routes/auth")
-server.use("/products", auth,productRouter);
+server.use("/products",productRouter);
 server.use("/users",auth, userRouter);
 server.use("/auth",authRouter)
 
